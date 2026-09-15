@@ -1,0 +1,100 @@
+/* ═══ camada de animação — aditiva, não altera dados nem estilos existentes ═══ */
+html{scroll-behavior:smooth}
+.section-title,.sub-title,.q-title{scroll-margin-top:18px}
+
+/* Estado inicial aplicado só quando o JS confirma suporte (sem JS, nada fica escondido) */
+.anim-on .rv{opacity:0;transform:translateY(16px)}
+.anim-on .rv.in{opacity:1;transform:none;
+  transition:opacity .55s cubic-bezier(.22,.61,.36,1),transform .55s cubic-bezier(.22,.61,.36,1)}
+
+/* Barras horizontais crescem da esquerda */
+.anim-on .bar-row .bf{transition:width .9s cubic-bezier(.22,.61,.36,1)}
+/* Barras verticais do gráfico de cobertura crescem de baixo */
+.anim-on .cc-bar{transition:height .8s cubic-bezier(.22,.61,.36,1)}
+.cc-bar{transform-origin:bottom center}
+.cc-bar:hover{filter:brightness(1.08)}
+.anim-on .cc-bar .cc-val{transition:opacity .3s ease .5s}
+.anim-on .cc-group:not(.in) .cc-val{opacity:0}
+
+/* Funil: etapas entram em cascata */
+.anim-on .funil path,.anim-on .funil text{opacity:0}
+.anim-on .funil.in path{animation:funilIn .6s cubic-bezier(.22,.61,.36,1) forwards}
+.anim-on .funil.in text{animation:fadeIn .5s ease forwards}
+@keyframes funilIn{from{opacity:0;transform:translateY(-10px) scaleY(.82)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.funil path{transform-box:fill-box;transform-origin:center}
+.funil path{transition:filter .25s ease}
+.funil path:hover{filter:brightness(1.06)}
+
+/* Pizza e donut: fatias abrem a partir do centro */
+.anim-on .pie path{opacity:0;transform-box:view-box;transform-origin:116px 116px}
+.anim-on .pie.in path{animation:sliceIn .7s cubic-bezier(.22,.61,.36,1) forwards}
+@keyframes sliceIn{from{opacity:0;transform:scale(.55) rotate(-12deg)}to{opacity:1;transform:none}}
+.anim-on .pie text{opacity:0}
+.anim-on .pie.in text{animation:fadeIn .45s ease .35s forwards}
+.pie path{transition:filter .2s ease}
+.pie path:hover{filter:brightness(1.09)}
+.pie-legend li{transition:transform .2s ease}
+.pie-legend li:hover{transform:translateX(3px)}
+
+/* Nuvem de temas: bolhas surgem em cascata e reagem ao mouse */
+.anim-on .cloud g{opacity:0;transform-box:fill-box;transform-origin:center}
+.anim-on .cloud.in g{animation:bubbleIn .62s cubic-bezier(.34,1.3,.5,1) forwards}
+@keyframes bubbleIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+.cloud g{transition:transform .28s cubic-bezier(.34,1.3,.5,1)}
+.cloud g:hover{transform:scale(1.06)}
+.cloud circle{transition:filter .28s ease}
+.cloud g:hover circle{filter:brightness(1.1)}
+
+/* Cards: leve elevação no hover */
+.kpi-card,.csm-picto-card{transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease}
+.kpi-card:hover,.csm-picto-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.09)}
+.kpi-icon{transition:transform .3s cubic-bezier(.34,1.3,.5,1)}
+.kpi-card:hover .kpi-icon{transform:scale(1.14) rotate(-5deg)}
+
+/* Índice e abas */
+.toc a{transition:transform .2s ease,background .2s ease,color .2s ease}
+.toc a:hover{transform:translateY(-2px)}
+.tabs button,.side-nav button{transition:background .22s ease,color .22s ease,transform .2s ease}
+.tabs button:hover,.side-nav button:hover{transform:translateY(-1px)}
+.tabpanel:not([hidden]){animation:panelIn .4s cubic-bezier(.22,.61,.36,1)}
+.side-panel:not([hidden]){animation:panelIn .32s cubic-bezier(.22,.61,.36,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Blocos e comentários expansíveis */
+.cmt-group>summary,.cmt>summary{transition:background .2s ease}
+.cmt-group>summary::before,.cmt>summary::before{transition:transform .25s ease}
+details[open]>.cmt-body,details[open]>.cmp-body,details.cmt-group[open]>.cmt-list,
+details.cmt-group[open]>.cmt-head{animation:openDown .3s cubic-bezier(.22,.61,.36,1)}
+@keyframes openDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.theme-tag{transition:transform .2s ease}
+.cmt>summary:hover .theme-tag{transform:translateY(-1px)}
+.badge{transition:transform .2s ease}
+.cmt>summary:hover .badge{transform:scale(1.04)}
+
+/* Tabelas */
+table tbody tr{transition:background .18s ease}
+.cmt-toggle,.col-toggle{transition:background .2s ease,color .2s ease,transform .2s ease}
+.cmt-toggle:hover,.col-toggle:hover{transform:translateY(-1px)}
+
+/* Voltar ao topo */
+#toTop{position:fixed;right:22px;bottom:22px;width:42px;height:42px;border:none;border-radius:50%;
+  background:var(--pink);color:#fff;font-size:17px;cursor:pointer;opacity:0;pointer-events:none;
+  transform:translateY(12px);transition:opacity .3s ease,transform .3s ease,background .2s ease;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:50}
+#toTop.show{opacity:1;pointer-events:auto;transform:none}
+#toTop:hover{background:var(--pink-dark);transform:translateY(-2px)}
+
+/* Sem animação para quem pediu movimento reduzido, e nada escondido na impressão */
+@media (prefers-reduced-motion:reduce){
+  .anim-on .rv{opacity:1!important;transform:none!important}
+  .anim-on .funil path,.anim-on .funil text,.anim-on .pie path,.anim-on .pie text,
+  .anim-on .cloud g,.anim-on .cc-group:not(.in) .cc-val{opacity:1!important;animation:none!important}
+  html{scroll-behavior:auto}
+}
+@media print{
+  .anim-on .rv{opacity:1!important;transform:none!important}
+  .anim-on .funil path,.anim-on .funil text,.anim-on .pie path,.anim-on .pie text,
+  .anim-on .cloud g,.anim-on .cc-group:not(.in) .cc-val{opacity:1!important;animation:none!important}
+  #toTop{display:none}
+}
