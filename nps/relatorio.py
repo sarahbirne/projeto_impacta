@@ -23,6 +23,10 @@ from .versao import NOME_PROJETO, VERSAO, ENTREGA
 # Seções do documento, na ordem em que aparecem. Só é exibida a seção que
 # tiver pelo menos um módulo ativo nesta versão; a numeração é contínua.
 SECOES = [
+    ('funil', 'Funil de engajamento da pesquisa',
+     'O funil fecha a conversão da pesquisa inteira: base total de contatos, contatos alcançados '
+     'pelos dois métodos de alcance e respostas. Depois dele vem a divisão das respostas entre '
+     'follow-up do CSM e e-mail marketing.'),
     ('nps', 'NPS', None),
 ]
 

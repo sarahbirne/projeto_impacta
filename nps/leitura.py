@@ -27,6 +27,7 @@ def _sem_acento(t):
 # 'igual:' compara o cabeçalho inteiro; 'contem:' procura o trecho.
 COLUNAS = {
     'email':        ('igual:e-mail', 'E-mail'),
+    'abriu':        ('contem:abriu', 'Abriu? (Sim / Não / FUP)'),
     'respondeu':    ('igual:respondeu', 'Respondeu (Sim / Não)'),
     'nps':          ('igual:nps', 'NPS (0 a 10)'),
 }

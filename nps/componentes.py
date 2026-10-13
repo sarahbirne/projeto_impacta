@@ -179,6 +179,46 @@ def kpi_grid(cards, colunas=None):
 
 
 # ══════════════════════════════════════════════════════════════════════
+# Funil
+# ══════════════════════════════════════════════════════════════════════
+def funil(etapas, largura_topo=500):
+    """Funil de etapas afuniladas.
+
+    etapas — lista de dicts: {'valor': int, 'titulo': str, 'linhas': [str, ...]}
+             A largura de cada faixa é proporcional ao valor da primeira etapa.
+             'cor' é opcional; por padrão usa a rampa do kit.
+    """
+    if not etapas:
+        return ''
+    base = etapas[0]['valor'] or 1
+    cores_padrao = [DESTAQUE, SECUNDARIO, PRINCIPAL, AD_MALVA]
+    X0, Y0, H, GAP = 18.0, 22.0, 82.0, 6.0
+    largs = [largura_topo * (e['valor'] / base) for e in etapas]
+    largs.append(largs[-1])
+    partes, y = [], Y0
+    for i, e in enumerate(etapas):
+        cor = e.get('cor') or cores_padrao[min(i, len(cores_padrao) - 1)]
+        w1, w2 = largs[i], largs[i + 1]
+        cx = X0 + largura_topo / 2
+        partes.append(
+            f'<path d="M {cx-w1/2:.1f} {y:.1f} L {cx+w1/2:.1f} {y:.1f} '
+            f'L {cx+w2/2:.1f} {y+H:.1f} L {cx-w2/2:.1f} {y+H:.1f} Z" fill="{cor}"/>')
+        partes.append(
+            f'<text x="{cx:.1f}" y="{y+H/2:.1f}" text-anchor="middle" dominant-baseline="central" '
+            f'fill="{texto_sobre(cor)}" font-size="24" font-weight="500">{e["valor"]}</text>')
+        ty = y + 26
+        partes.append(f'<text x="558" y="{ty:.1f}" fill="{DESTAQUE}" font-size="15" '
+                      f'font-weight="500">{esc(e["titulo"])}</text>')
+        for j, linha in enumerate(e.get('linhas', [])):
+            partes.append(f'<text x="558" y="{ty+19*(j+1):.1f}" fill="{TEXTO_SUAVE}" '
+                          f'font-size="12.5">{esc(linha)}</text>')
+        y += H + GAP
+    alt = int(Y0 + len(etapas) * (H + GAP) + 20)
+    return (f'<div class="funil-wrap"><svg class="funil" viewBox="0 0 900 {alt}" '
+            f'role="img" aria-label="Funil">{"".join(partes)}</svg></div>\n')
+
+
+# ══════════════════════════════════════════════════════════════════════
 # Donut e pizza
 # ══════════════════════════════════════════════════════════════════════
 def _ponto(cx, cy, r, ang):
@@ -231,6 +271,26 @@ def _pie_wrap(partes, fatias, rotulo_svg):
     return (f'<div class="pie-wrap"><svg class="pie" viewBox="0 0 232 232" role="img" '
             f'aria-label="{rotulo_svg}">{"".join(partes)}</svg>'
             f'<ul class="pie-legend">{"".join(itens)}</ul></div>\n')
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Barras horizontais
+# ══════════════════════════════════════════════════════════════════════
+def barras(linhas, total=None):
+    """Barras horizontais com rótulo à esquerda e valor à direita.
+
+    linhas — lista de dicts: {'rotulo', 'valor', 'pct'?, 'cor'?}
+             Sem 'pct', calcula sobre `total` (ou sobre a soma dos valores).
+    """
+    soma = total or sum(l['valor'] for l in linhas) or 1
+    out = []
+    for i, l in enumerate(linhas):
+        p = l.get('pct', l['valor'] / soma * 100)
+        cor = l.get('cor') or [PRINCIPAL, SECUNDARIO, DESTAQUE, AD_MALVA][i % 4]
+        out.append(f'<div class="bar-row"><div class="bl">{_txt(l["rotulo"])}</div>'
+                   f'<div class="bt"><div class="bf" style="width:{p:.1f}%;background:{cor}"></div></div>'
+                   f'<div class="bv">{l["valor"]} ({pct(p)})</div></div>')
+    return '\n'.join(out) + '\n'
 
 
 # ══════════════════════════════════════════════════════════════════════

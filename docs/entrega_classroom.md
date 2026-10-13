@@ -1,4 +1,4 @@
-# Entrega AC1 — 14/09
+# Entrega AC2 — 13/10
 
 Cada integrante do grupo deve entregar no Classroom, mesmo que outro já tenha entregado.
 
@@ -10,6 +10,6 @@ Cada integrante do grupo deve entregar no Classroom, mesmo que outro já tenha e
 
 **Board do projeto:** <link>
 
-**Repositório GitHub:** <link> (tag `v1.0`)
+**Repositório GitHub:** <link> (tag `v2.0`)
 
-**Vídeo da funcionalidade — Base comparativa entre quadrimestres:** <link>
+**Vídeo da funcionalidade — Funil de engajamento da pesquisa:** <link>

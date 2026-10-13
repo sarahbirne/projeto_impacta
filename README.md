@@ -1,6 +1,6 @@
 # Projeto de NPS (Net Promoter Score) para empresas
 
-**Versão 1.0 — AC1 (14/09)** · funcionalidade da sprint: **Base comparativa entre quadrimestres**
+**Versão 2.0 — AC2 (13/10)** · funcionalidade da sprint: **Funil de engajamento da pesquisa**
 
 ## Contexto
 
@@ -12,7 +12,7 @@ A base de contatos foi gerada de forma fictícia no CRM (nome, sobrenome, celula
 
 Transformar a planilha da pesquisa em um relatório analítico reexecutável: calcular os indicadores do período atual e compará-los com o quadrimestre anterior, para identificar evolução, regressões e padrões.
 
-## Funcionalidades desta versão (1.0)
+## Funcionalidades desta versão (2.0)
 
 - Upload e validação da planilha (CSV)
 - Síntese executiva: base, respostas e NPS
@@ -20,22 +20,22 @@ Transformar a planilha da pesquisa em um relatório analítico reexecutável: ca
 - Base comparativa com o quadrimestre anterior (variação em p.p.)
 - Notas de método e qualidade de dado
 - Download do relatório HTML
+- Funil de engajamento da pesquisa
+- Cards de conversão (alcance, conversão, resposta)
+- Origem das respostas: follow-up do CSM x e-mail marketing
 
 ### Novidades desta entrega
 
-- Upload e validação da planilha (CSV)
-- Síntese executiva: base, respostas e NPS
-- Composição do NPS (promotores, neutros, detratores)
-- Base comparativa com o quadrimestre anterior (variação em p.p.)
-- Notas de método e qualidade de dado
-- Download do relatório HTML
+- Funil de engajamento da pesquisa
+- Cards de conversão (alcance, conversão, resposta)
+- Origem das respostas: follow-up do CSM x e-mail marketing
 
 ## Roadmap acadêmico
 
 | Entrega | Data | Versão | Funcionalidade da sprint | Status |
 |---|---|---|---|---|
-| AC1 | 14/09 | 1.0 | Base comparativa entre quadrimestres | ✅ Entregue nesta versão |
-| AC2 | 13/10 | 2.0 | Funil de engajamento da pesquisa | ⏳ Planejada |
+| AC1 | 14/09 | 1.0 | Base comparativa entre quadrimestres | ✅ Concluída |
+| AC2 | 13/10 | 2.0 | Funil de engajamento da pesquisa | ✅ Entregue nesta versão |
 | AC3 | 08/11 | 3.0 | Satisfação: PMF, CSAT e autorização de contato | ⏳ Planejada |
 | Entrega final | 22/11 | 4.0 | Feedback qualitativo | ⏳ Planejada |
 
@@ -76,13 +76,14 @@ projeto-nps-empresas/
 │   └── secoes/
 │       ├── __init__.py     # lista das seções ativas nesta versão
 │       ├── composicao_nps.py   # AC1 — composição do NPS + comparativo
+│       ├── funil.py            # AC2 — funil de engajamento
 ├── assets/                 # CSS, JS e fonte embutidos no HTML gerado
 ├── data/
 │   ├── exemplo_base_atual.csv          # planilha de exemplo (dados fictícios anonimizados)
 │   └── base_comparativa_marco2026.csv  # indicadores do quadrimestre anterior
 ├── exemplos/relatorio_exemplo.html     # relatório gerado com os dados de exemplo
 └── docs/
-    ├── AC1.md               # objetivo, teste e roteiro do vídeo desta entrega
+    ├── AC2.md               # objetivo, teste e roteiro do vídeo desta entrega
     ├── backlog.md          # funcionalidades para o board
     └── entrega_classroom.md
 ```
@@ -126,6 +127,7 @@ O HTML gerado abre em qualquer navegador, sem servidor.
 | `Respondeu` | `Sim` / `Não` — define os respondentes |
 | `NPS` | nota 0 a 10 |
 | `E-mail` | conferência de duplicidade e contatos sem e-mail |
+| `Abriu?` | `Sim` / `Não` / `FUP` — alcance e origem da resposta |
 
 Cada versão exige só as colunas das funcionalidades ativas; se faltar alguma, a interface informa qual.
 
@@ -136,6 +138,7 @@ Cada versão exige só as colunas das funcionalidades ativas; se faltar alguma, 
 - **NPS** — padrão Reichheld/Bain: 9–10 promotores, 7–8 neutros, 0–6 detratores; NPS = %promotores − %detratores.
 - **Taxa de resposta** — denominador é a base contatada (todas as linhas da planilha).
 - **Comparativo** — diferença de percentuais em pontos percentuais (pts); NPS e médias em valor absoluto. Para neutros, detratores e respostas negativas, queda aparece em verde.
+- **Origem da resposta** — respondeu com `Abriu? = Sim` → e-mail marketing; sem registro de abertura ou `FUP` → follow-up do CSM (nunca "indeterminado").
 
 ## Privacidade
 
@@ -143,6 +146,6 @@ Todos os dados do repositório são fictícios e foram anonimizados para fins ac
 
 ## Documentação da entrega
 
-- [`docs/AC1.md`](docs/AC1.md) — objetivo, como testar e roteiro do vídeo
+- [`docs/AC2.md`](docs/AC2.md) — objetivo, como testar e roteiro do vídeo
 - [`docs/backlog.md`](docs/backlog.md) — funcionalidades para o board
 - [`docs/entrega_classroom.md`](docs/entrega_classroom.md) — checklist da entrega
