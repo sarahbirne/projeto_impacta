@@ -1,6 +1,6 @@
 NOME_PROJETO = 'Projeto de NPS para empresas'
-VERSAO = '2.0'
-ENTREGA = 'AC2 — 13/10'
+VERSAO = '4.0'
+ENTREGA = 'Entrega final — 22/11'
 
 FUNCIONALIDADES = [
     'Upload e validação da planilha (CSV)',
@@ -12,4 +12,12 @@ FUNCIONALIDADES = [
     'Funil de engajamento da pesquisa',
     'Cards de conversão (alcance, conversão, resposta)',
     'Origem das respostas: follow-up do CSM x e-mail marketing',
+    'PMF — "como se sentiria sem o serviço" (com realocação de inversões)',
+    'CSAT dos 4 atributos de atendimento com distribuição das notas',
+    'Autorização para aprofundamento',
+    'Comparativos de PMF e CSAT',
+    'Feedback qualitativo em abas',
+    'Nuvem de temas (codificação por palavras-chave)',
+    'Respostas na íntegra expansíveis',
+    'Respostas por CSM (abas laterais)',
 ]

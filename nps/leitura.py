@@ -26,10 +26,23 @@ def _sem_acento(t):
 # nome canônico -> (regra de busca no cabeçalho, descrição)
 # 'igual:' compara o cabeçalho inteiro; 'contem:' procura o trecho.
 COLUNAS = {
+    'nome':         ('igual:nome', 'Nome'),
+    'sobrenome':    ('igual:sobrenome', 'Sobrenome'),
     'email':        ('igual:e-mail', 'E-mail'),
+    'gerente':      ('contem:proprietario do contato', 'Proprietário do contato (gerente de relacionamento)'),
+    'empresa':      ('igual:nome da empresa', 'Nome da empresa'),
     'abriu':        ('contem:abriu', 'Abriu? (Sim / Não / FUP)'),
     'respondeu':    ('igual:respondeu', 'Respondeu (Sim / Não)'),
     'nps':          ('igual:nps', 'NPS (0 a 10)'),
+    'pmf':          ('contem:imagine que amanha', 'PMF — como se sentiria sem o serviço'),
+    'beneficio':    ('contem:principal beneficio', 'Principal benefício (texto aberto)'),
+    'melhorar':     ('contem:como podemos melhorar', 'Como podemos melhorar (texto aberto)'),
+    'csat_empatia':      ('contem:empatia e proatividade', 'CSAT — Empatia e proatividade'),
+    'csat_agilidade':    ('contem:agilidade no atendimento', 'CSAT — Agilidade no atendimento'),
+    'csat_clareza':      ('contem:clareza e assertividade', 'CSAT — Clareza e assertividade'),
+    'csat_conhecimento': ('contem:conhecimento sobre', 'CSAT — Conhecimento sobre produtos e serviços'),
+    'atendimento':  ('contem:melhorar no atendimento', 'Algo a melhorar no atendimento do gerente (texto aberto)'),
+    'contato':      ('contem:podemos entrar em contato', 'Autoriza contato para aprofundar'),
 }
 
 

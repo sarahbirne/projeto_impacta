@@ -2,7 +2,7 @@
 
 Sugestão de board (GitHub Projects, Trello ou similar) com colunas **A fazer**, **Em andamento** e **Concluído**, e um rótulo por entrega (AC1, AC2, AC3, Final).
 
-Status abaixo reflete a versão 2.0.
+Status abaixo reflete a versão 4.0.
 
 | Funcionalidade | Entrega | Status |
 |---|---|---|
@@ -18,11 +18,12 @@ Status abaixo reflete a versão 2.0.
 | Funil de engajamento (base → alcançados → respondentes) | AC2 | Concluído |
 | Cards de conversão da pesquisa | AC2 | Concluído |
 | Origem das respostas (follow-up x e-mail marketing) | AC2 | Concluído |
-| PMF com regra de realocação | AC3 | A fazer |
-| CSAT por atributo com distribuição ocultável | AC3 | A fazer |
-| Autorização para aprofundamento | AC3 | A fazer |
-| Comparativos de PMF e CSAT | AC3 | A fazer |
-| Codificação temática por palavras-chave | Final | A fazer |
-| Nuvem de temas e respostas na íntegra | Final | A fazer |
-| Respostas de atendimento por CSM | Final | A fazer |
-| Documentação final e vídeo consolidado | Final | A fazer |
+| PMF com regra de realocação | AC3 | Concluído |
+| CSAT por atributo com distribuição ocultável | AC3 | Concluído |
+| Autorização para aprofundamento | AC3 | Concluído |
+| Comparativos de PMF e CSAT | AC3 | Concluído |
+| Codificação temática por palavras-chave | Final | Concluído |
+| Nuvem de temas e respostas na íntegra | Final | Concluído |
+| Respostas de atendimento por CSM | Final | Concluído |
+| Diagrama de caso de uso, diagrama de classes e MER | Final | Concluído |
+| Documentação final e vídeo consolidado | Final | Concluído |

@@ -26,3 +26,6 @@ def calcular_nps(promotores, neutros, detratores):
     total = promotores + neutros + detratores
     return perc(promotores, total) - perc(detratores, total) if total else 0.0
 
+
+def texto_preenchido(v):
+    return bool(str(v).strip())

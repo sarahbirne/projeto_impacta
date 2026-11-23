@@ -27,7 +27,10 @@ SECOES = [
      'O funil fecha a conversão da pesquisa inteira: base total de contatos, contatos alcançados '
      'pelos dois métodos de alcance e respostas. Depois dele vem a divisão das respostas entre '
      'follow-up do CSM e e-mail marketing.'),
-    ('nps', 'NPS', None),
+    ('nps', 'NPS & satisfação', None),
+    ('quali', 'Feedback qualitativo',
+     'Codificação temática das respostas abertas. Uma resposta pode receber mais de um tema, '
+     'por isso o total de menções pode ser maior que o de respostas.'),
 ]
 
 

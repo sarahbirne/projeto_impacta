@@ -9,6 +9,7 @@ offline e pode ser compartilhado como anexo.
 import html as _html
 import math
 import os
+import re
 
 RAIZ_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets')
 
@@ -147,6 +148,16 @@ def subtitulo(texto):
     return f'\n<h3 class="sub-title">{_txt(texto)}</h3>\n'
 
 
+def pergunta(texto):
+    """Título de nível 4, para enunciados de pergunta ou blocos internos."""
+    return f'\n<h4 class="q-title">{_txt(texto)}</h4>\n'
+
+
+def fonte(texto):
+    """Linha discreta de fonte/observação abaixo de um gráfico ou tabela."""
+    return f'<p class="src">{_txt(texto)}</p>\n'
+
+
 def callout(texto, titulo=None):
     """Bloco rosa pálido de destaque. Aceita HTML no texto (use <b>, <ul>)."""
     t = f'<span class="callout-title">{_txt(titulo)}</span>\n' if titulo else ''
@@ -259,6 +270,31 @@ def donut(fatias, rotulo_centro='', valor_centro=''):
     return _pie_wrap(partes, fatias, 'Composição')
 
 
+def pizza(fatias):
+    """Pizza cheia, com o percentual escrito dentro das fatias maiores que 8%."""
+    cx = cy = 116
+    R = 104
+    partes, ang = [], 0.0
+    for i, f in enumerate(fatias):
+        p = f['pct']
+        if p <= 0:
+            continue
+        cor = f.get('cor') or RAMPA[i % len(RAMPA)]
+        a2 = ang + p * 3.6
+        x1, y1 = _ponto(cx, cy, R, ang)
+        x2, y2 = _ponto(cx, cy, R, a2)
+        la = 1 if p > 50 else 0
+        partes.append(f'<path d="M {cx} {cy} L {x1:.2f} {y1:.2f} A {R} {R} 0 {la} 1 '
+                      f'{x2:.2f} {y2:.2f} Z" fill="{cor}" stroke="#fff" stroke-width="2"/>')
+        if p >= 8:
+            lx, ly = _ponto(cx, cy, R * 0.62, (ang + a2) / 2)
+            partes.append(f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" '
+                          f'dominant-baseline="central" fill="{texto_sobre(cor)}" '
+                          f'font-size="17" font-weight="500">{pct(p)}</text>')
+        ang = a2
+    return _pie_wrap(partes, fatias, 'Distribuição')
+
+
 def _pie_wrap(partes, fatias, rotulo_svg):
     itens = []
     for i, f in enumerate(fatias):
@@ -291,6 +327,80 @@ def barras(linhas, total=None):
                    f'<div class="bt"><div class="bf" style="width:{p:.1f}%;background:{cor}"></div></div>'
                    f'<div class="bv">{l["valor"]} ({pct(p)})</div></div>')
     return '\n'.join(out) + '\n'
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Nuvem de temas (circle packing)
+# ══════════════════════════════════════════════════════════════════════
+def nuvem(temas, rotulo='Temas'):
+    """Bolhas proporcionais à contagem, empacotadas em espiral.
+
+    temas — lista de (rotulo, contagem). O total dos percentuais é a soma
+            das contagens, então serve para temas com sobreposição.
+    """
+    if not temas:
+        return ''
+    total = sum(v for _, v in temas)
+    itens = sorted(temas, key=lambda t: -t[1])
+    fator = 97 / math.sqrt(itens[0][1])
+    circ = []
+    for rot, v in itens:
+        raio = fator * math.sqrt(v)
+        if not circ:
+            circ.append((0.0, 0.0, raio, rot, v))
+            continue
+        melhor = None
+        # Espiral de busca: cresce até achar posição livre. O alcance precisa
+        # cobrir raio_maior + raio_atual, que com poucos temas fica grande.
+        limite = int(((97 + raio + 4) / 4.0) ** 2) + 4000
+        for k in range(1, limite):
+            ang, dist = k * 0.6, 4.0 * math.sqrt(k)
+            x, y = dist * math.cos(ang), dist * math.sin(ang)
+            if all(math.hypot(x - cx, y - cy) >= raio + cr + 2 for cx, cy, cr, _, _ in circ):
+                d = math.hypot(x, y)
+                if melhor is None or d < melhor[0]:
+                    melhor = (d, x, y)
+                if melhor and k > limite * 0.4:
+                    break
+        if melhor is None:  # fallback: encosta na borda do conjunto
+            r_ext = max(math.hypot(cx, cy) + cr for cx, cy, cr, _, _ in circ)
+            melhor = (0.0, r_ext + raio + 2, 0.0)
+        _, x, y = melhor
+        circ.append((x, y, raio, rot, v))
+    minx = min(c[0] - c[2] for c in circ); maxx = max(c[0] + c[2] for c in circ)
+    miny = min(c[1] - c[2] for c in circ); maxy = max(c[1] + c[2] for c in circ)
+    gs = []
+    for i, (x, y, raio, rot, v) in enumerate(circ):
+        if i < 3:
+            cor = [DESTAQUE, SECUNDARIO, PRINCIPAL][i]
+        else:
+            cor = PRINCIPAL if v >= total * 0.05 else AD_MALVA if v >= 2 else AD_AZUL
+        tc = texto_sobre(cor)
+        fs = max(7.2, min(12.0, raio * 0.24))
+        limite = max(11, int(raio / (fs * 0.30)))
+        linhas, atual = [], ''
+        for p in rot.split():
+            if len(atual + ' ' + p) <= limite or not atual:
+                atual = (atual + ' ' + p).strip()
+            else:
+                linhas.append(atual); atual = p
+        linhas.append(atual)
+        nfs = max(14.0, min(30.0, raio * 0.52))
+        alt = len(linhas) * (fs * 1.16)
+        y0 = y - alt / 2 - nfs * 0.16
+        txt = ''.join(f'<text x="{x:.1f}" y="{y0+j*fs*1.16:.1f}" text-anchor="middle" '
+                      f'fill="{tc}" font-size="{fs:.1f}" font-weight="500">{esc(l)}</text>'
+                      for j, l in enumerate(linhas))
+        pfs = max(8.0, min(12.0, raio * 0.20))
+        gs.append(f'<g><title>{esc(rot)} — {v} de {total} ({pct(v/total*100)})</title>'
+                  f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{raio:.1f}" fill="{cor}"/>{txt}'
+                  f'<text x="{x:.1f}" y="{y0+alt+nfs*0.42:.1f}" text-anchor="middle" fill="{tc}" '
+                  f'font-size="{nfs:.1f}" font-weight="500">{v}</text>'
+                  f'<text x="{x:.1f}" y="{y0+alt+nfs*0.42+pfs*1.35:.1f}" text-anchor="middle" '
+                  f'fill="{tc}" fill-opacity=".75" font-size="{pfs:.1f}">{pct(v/total*100)}</text></g>')
+    vb = f'{minx-8:.0f} {miny-8:.0f} {maxx-minx+16:.0f} {maxy-miny+16:.0f}'
+    return (f'<div class="cloud-wrap"><svg class="cloud" viewBox="{vb}" role="img" '
+            f'aria-label="{esc(rotulo)}">{"".join(gs)}</svg></div>\n')
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -332,6 +442,68 @@ def badge(texto, tipo='pink', mini=False):
 # ══════════════════════════════════════════════════════════════════════
 # Abas, blocos expansíveis e listas de comentários
 # ══════════════════════════════════════════════════════════════════════
+def abas(paineis):
+    """Abas horizontais.
+
+    paineis — lista de dicts: {'id', 'rotulo', 'contagem'?, 'conteudo'}
+    """
+    bt = ''.join(
+        f'<button role="tab" id="tab-{p["id"]}" aria-controls="{p["id"]}" '
+        f'aria-selected="{"true" if i == 0 else "false"}" onclick="showTab(\'{p["id"]}\')">'
+        f'{esc(p["rotulo"])}'
+        + (f' <span style="opacity:.7">({p["contagem"]})</span>' if p.get('contagem') is not None else '')
+        + '</button>'
+        for i, p in enumerate(paineis))
+    pn = ''.join(
+        f'<div class="tabpanel" id="{p["id"]}" role="tabpanel" aria-labelledby="tab-{p["id"]}"'
+        f'{"" if i == 0 else " hidden"}>\n{p["conteudo"]}\n</div>\n'
+        for i, p in enumerate(paineis))
+    return f'\n<div class="tabs" role="tablist">{bt}</div>\n{pn}'
+
+
+def abas_laterais(grupos):
+    """Abas verticais à esquerda com painel à direita.
+
+    grupos — lista de dicts: {'id', 'rotulo', 'contagem'?, 'conteudo'}
+    """
+    nav = ''.join(
+        f'<button role="tab" id="ntab-{g["id"]}" aria-controls="{g["id"]}" '
+        f'aria-selected="{"true" if i == 0 else "false"}" onclick="showCsm(\'{g["id"]}\')">'
+        f'{esc(g["rotulo"])}'
+        + (f'<span class="nc">{g["contagem"]}</span>' if g.get('contagem') is not None else '')
+        + '</button>'
+        for i, g in enumerate(grupos))
+    pn = ''.join(
+        f'<div class="side-panel" id="{g["id"]}" role="tabpanel" aria-labelledby="ntab-{g["id"]}"'
+        f'{"" if i == 0 else " hidden"}>\n{g["conteudo"]}\n</div>'
+        for i, g in enumerate(grupos))
+    return (f'\n<div class="side-tabs"><div class="side-nav" role="tablist">{nav}</div>'
+            f'<div class="side-panels">{pn}</div></div>\n')
+
+
+def item_expansivel(titulo, corpo, subtitulo=None, tags=None, badges=None):
+    """Uma linha clicável que abre para revelar `corpo`."""
+    sub = f'<span class="where">{_txt(subtitulo)}</span>' if subtitulo else ''
+    tg = ''.join(f'<span class="theme-tag">{esc(t)}</span>' for t in (tags or []))
+    bd = ''.join(badges or [])
+    return (f'<details class="cmt"><summary><span class="who">{esc(titulo)}</span>'
+            f'{sub}{bd}{tg}</summary>'
+            f'<div class="cmt-body">{corpo}</div></details>')
+
+
+def bloco_expansivel(titulo, itens, contador=None, id_lista=None, com_botao=True):
+    """Bloco recolhido que agrupa muitos itens expansíveis.
+
+    Use quando a lista for longa: mantém a página navegável e cada item
+    continua abrindo individualmente.
+    """
+    cont = f'<span class="grp-count">{contador}</span>' if contador is not None else ''
+    idl = id_lista or 'lst-' + re.sub(r'[^a-z0-9]+', '-', titulo.lower())[:24]
+    botao = (f'<div class="cmt-head"><button class="cmt-toggle" data-list="{idl}" '
+             f'onclick="toggleAll(this)">Expandir todos</button></div>' if com_botao else '')
+    return (f'\n<details class="cmt-group"><summary><span class="grp-title">{esc(titulo)}</span>'
+            f'{cont}</summary>{botao}'
+            f'<div class="cmt-list" id="{idl}">{"".join(itens)}</div></details>\n')
 
 
 def bloco_comparativo(titulo, contador, conteudo):
